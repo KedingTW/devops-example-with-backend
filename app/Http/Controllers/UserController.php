@@ -12,7 +12,8 @@ class UserController extends Controller
         return [
             'id' => $id,
             'username' => 'minche',
-            'password' => 'bedaa5fa05ff75dbe7f92852c7d015f8'
+            'password' => 'bedaa5fa05ff75dbe7f92852c7d015f8',
+            'status' => true
         ];
     }
 }
