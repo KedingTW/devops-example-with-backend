@@ -58,7 +58,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { context } = require('@actions/github');
+            const { github, context } = require('@actions/github');
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
             const label = 'request_code_review';
