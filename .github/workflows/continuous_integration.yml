@@ -63,7 +63,7 @@ jobs:
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
             const label = 'request_code_review';
-            await github.rest.pulls.addLabels({
+            await github.rest.issues.addLabels({
               owner,
               repo,
               issue_number: pull_number,
