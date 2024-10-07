@@ -46,7 +46,7 @@ jobs:
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   add_label:
-    # needs: auto_code_review
+    needs: auto_code_review
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -58,11 +58,10 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const gh = require('@actions/github');
-            const { owner, repo } = gh.context.repo;
-            const pull_number = gh.context.payload.pull_request.number;
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
             const label = 'request_code_review';
-            await gh.issues.addLabels({
+            await github.issues.addLabels({
               owner,
               repo,
               issue_number: pull_number,
