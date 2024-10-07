@@ -59,6 +59,7 @@ jobs:
       - name: Add request_code_review label
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
@@ -69,5 +70,3 @@ jobs:
               issue_number: pull_number,
               labels: [label],
             });
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
