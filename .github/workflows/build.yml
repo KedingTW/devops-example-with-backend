@@ -35,3 +35,20 @@ jobs:
         run: ./vendor/bin/phpstan analyze --error-format=github
       - name: Run tests
         run: php artisan test
+  code_review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CI: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v1.0
+        with:
+          host_url: ${{ secrets.SONAR_HOST_URL }}
+          token: ${{ secrets.SONAR_TOKEN }}
