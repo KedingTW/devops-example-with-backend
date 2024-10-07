@@ -3,7 +3,5 @@ includes:
 parameters:
     paths:
         - app/
-        - config/
-        - routes/
         - tests/
     level: 5
