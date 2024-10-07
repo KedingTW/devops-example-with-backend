@@ -1,14 +1,10 @@
-name: build
+name: CI
 on:
   pull_request: {}
   workflow_dispatch: {}
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      CI: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -35,13 +31,9 @@ jobs:
         run: ./vendor/bin/phpstan analyze --error-format=github
       - name: Run tests
         run: php artisan test
-  code_review:
-    # needs: build
+  auto_code_review:
+    needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      CI: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -53,3 +45,26 @@ jobs:
         env:
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  add_label:
+    needs: auto_code_review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Add request_code_review label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { context } = require('@actions/github');
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            const label = 'request_code_review';
+            await github.issues.addLabels({
+              owner,
+              repo,
+              issue_number: pull_number,
+              labels: [label],
+            });
