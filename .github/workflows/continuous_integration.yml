@@ -69,3 +69,5 @@ jobs:
               issue_number: pull_number,
               labels: [label],
             });
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
