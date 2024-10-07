@@ -36,6 +36,7 @@ jobs:
       - name: Run tests
         run: php artisan test
   code_review:
+    # needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
