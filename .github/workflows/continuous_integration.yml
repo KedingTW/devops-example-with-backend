@@ -46,7 +46,7 @@ jobs:
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   add_label:
-    needs: auto_code_review
+    # needs: auto_code_review
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -61,7 +61,7 @@ jobs:
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
             const label = 'request_code_review';
-            await github.issues.addLabels({
+            await github.rest.issues.addLabels({
               owner,
               repo,
               issue_number: pull_number,
