@@ -1,0 +1,72 @@
+name: CI
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd
+          coverage: none
+      - name: Install composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Prepare Laravel Application
+        run: |
+          cp .env.ci .env
+          php artisan key:generate
+      - name: Run Pint
+        run: ./vendor/bin/pint
+      - name: Run PHP CodeSniffer
+        run: ./vendor/bin/phpcs --standard=PSR12 app/
+      - name: Run Static Analysis
+        run: ./vendor/bin/phpstan analyze --error-format=github
+      - name: Run tests
+        run: php artisan test
+  auto_code_review:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v3.0.0
+        env:
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  add_label:
+    needs: auto_code_review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Add request_code_review label
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            const label = 'request_code_review';
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: pull_number,
+              labels: [label],
+            });
