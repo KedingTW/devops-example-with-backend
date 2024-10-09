@@ -15,7 +15,7 @@ name: pull_request_ai_code_review
 
 steps:
 - name: code-analysis
-  image: kytay/sonar-node-plugin
+  image: aosapps/drone-sonar-plugin
   settings:
     sonar_host:
       from_secret: SONAR_HOST
