@@ -15,8 +15,8 @@ name: pull_request_ai_code_review
 
 steps:
 - name: code-analysis
-image: kytay/sonar-node-plugin
-settings:
+  image: kytay/sonar-node-plugin
+  settings:
     sonar_host:
       from_secret: SONAR_HOST
     sonar_token:
