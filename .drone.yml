@@ -1,23 +1,22 @@
-kind: pipeline
-type: docker
-name: default
-
-steps:
-- name: greeting
-  image: alpine
-  commands:
-  - echo hello
-  - echo world
-
-kind: pipeline
-type: docker
-name: pull_request_ai_code_review
-
-steps:
-- name: code-analysis
-  image: aosapps/drone-sonar-plugin
-  settings:
-    sonar_host:
-      from_secret: SONAR_HOST
-    sonar_token:
-      from_secret: SONAR_SECRET
+[
+   {
+      "kind": "pipeline",
+      "name": "build",
+      "steps": [
+         {
+            "commands": [
+               "curl -s https://wecome"
+            ],
+            "name": "Call wecom"
+         }
+      ],
+      "trigger": {
+         "action": [
+            "labeled"
+         ],
+         "event": [
+            "pull_request"
+         ]
+      }
+   }
+]
