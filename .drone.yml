@@ -18,7 +18,9 @@ steps:
 trigger:
   action:
   - opened
-  - synchronize
+  - synchronized
+  - closed
+  - reopened
   event:
   - pull_request
 type: docker
