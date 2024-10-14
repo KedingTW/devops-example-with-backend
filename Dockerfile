@@ -5,10 +5,10 @@ WORKDIR /var/www
 RUN apt-get update
 
 RUN apt-get install -y \
-    zlib1g-dev \
-    libpng-dev \
     libonig-dev \
-    libzip-dev
+    libpng-dev \
+    libzip-dev \
+    zlib1g-dev
 
 RUN docker-php-ext-install gd mbstring pdo pdo_mysql zip
 
