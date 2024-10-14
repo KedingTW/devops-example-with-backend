@@ -1,17 +1,19 @@
 local PipelineBuild = {
     kind: "pipeline",
+    type: "docker",
     name: "build",
     steps: [
         {
-            name: "Call wecom",
+            name: "Build",
+            image: "alpine",
             commands: [
-                "curl -s https://wecome"
+                "echo start build on PR labeled"
             ]
         }
     ],
     trigger: {
         event: ['pull_request'],
-        action: ['labeled'],
+        action: ['opened', 'synchronize'],
     }
 };
 
