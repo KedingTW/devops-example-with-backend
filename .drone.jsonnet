@@ -11,10 +11,10 @@ local PipelineBuild = {
             ]
         }
     ],
-    // trigger: {
-    //     event: ['pull_request'],
+    trigger: {
+        event: ['pull_request'],
     //     action: ['labeled'],
-    // }
+    }
 };
 
 [
