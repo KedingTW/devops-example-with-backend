@@ -15,14 +15,7 @@ steps:
   - echo start build on PR labeled
   image: alpine
   name: Build
-trigger:
-  action:
-  - opened
-  - synchronized
-  - closed
-  - reopened
-  branch:
-  - main
-  event:
-  - pull_request
+  when:
+    event:
+    - pull_request
 type: docker

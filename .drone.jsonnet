@@ -8,14 +8,17 @@ local PipelineBuild = {
             image: "alpine",
             commands: [
                 "echo start build on PR labeled"
-            ]
+            ],
+            when: {
+                event: ['pull_request']
+            }
         }
     ],
-    trigger: {
-        branch: ['main'],
-        event: ['pull_request'],
-        action: ['opened', 'synchronized', 'closed', 'reopened'],
-    }
+    // trigger: {
+    //     branch: ['main'],
+    //     event: ['pull_request'],
+    //     action: ['opened', 'synchronized', 'closed', 'reopened'],
+    // }
 };
 
 local PipelineBasic = {
