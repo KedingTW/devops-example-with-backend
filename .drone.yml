@@ -1,0 +1,12 @@
+---
+kind: pipeline
+name: build
+steps:
+- commands:
+  - curl -s https://wecome
+  name: Call wecom
+trigger:
+  action:
+  - labeled
+  event:
+  - pull_request
