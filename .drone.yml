@@ -7,6 +7,9 @@ steps:
   image: alpine
   name: Build
 trigger:
+  action:
+  - opened
+  - synchronize
   event:
   - pull_request
 type: docker

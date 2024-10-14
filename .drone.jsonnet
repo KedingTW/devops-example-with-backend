@@ -13,7 +13,7 @@ local PipelineBuild = {
     ],
     trigger: {
         event: ['pull_request'],
-    //     action: ['labeled'],
+        action: ['opened', 'synchronize'],
     }
 };
 
