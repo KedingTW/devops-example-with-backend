@@ -17,6 +17,22 @@ local PipelineBuild = {
     }
 };
 
+local PipelineBasic = {
+    kind: "pipeline",
+    type: "docker",
+    name: "start_drone",
+    steps: [
+        {
+            name: "Build",
+            image: "alpine",
+            commands: [
+                "echo start run drone"
+            ]
+        }
+    ],
+};
+
 [
+    PipelineBasic,
     PipelineBuild,
 ]
