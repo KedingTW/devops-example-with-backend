@@ -12,6 +12,7 @@ local PipelineBuild = {
         }
     ],
     trigger: {
+        branch: ['main'],
         event: ['pull_request'],
         action: ['opened', 'synchronized', 'closed', 'reopened'],
     }

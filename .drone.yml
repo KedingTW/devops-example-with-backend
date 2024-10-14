@@ -21,6 +21,8 @@ trigger:
   - synchronized
   - closed
   - reopened
+  branch:
+  - main
   event:
   - pull_request
 type: docker
