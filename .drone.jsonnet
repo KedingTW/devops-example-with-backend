@@ -23,7 +23,7 @@ local PipelineBasic = {
     name: "start_drone",
     steps: [
         {
-            name: "Build",
+            name: "Start Run Drone",
             image: "alpine",
             commands: [
                 "echo start run drone"

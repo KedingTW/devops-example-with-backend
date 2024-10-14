@@ -5,7 +5,7 @@ steps:
 - commands:
   - echo start run drone
   image: alpine
-  name: Build
+  name: Start Run Drone
 type: docker
 ---
 kind: pipeline
