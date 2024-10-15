@@ -1,43 +1,3 @@
-local PipelineBuild = {
-    kind: "pipeline",
-    type: "docker",
-    name: "build",
-    steps: [
-        {
-            name: "Build",
-            image: "alpine",
-            commands: [
-                "echo start build on PR labeled"
-            ],
-            // when: {
-            //     event: ['pull_request']
-            // }
-        }
-    ],
-    trigger: {
-        event: ['pull_request'],
-        action: ['labeled'],
-    }
-};
-
-local PipelineBasic = {
-    kind: "pipeline",
-    type: "docker",
-    name: "start_drone",
-    trigger: {
-       event: ['push']
-    },
-    steps: [
-        {
-            name: "Start Run Drone",
-            image: "alpine",
-            commands: [
-                "echo start run drone"
-            ]
-        }
-    ],
-};
-
 local PipelineRequestCodeReview = {
     kind: "pipeline",
     type: "docker",
@@ -58,28 +18,46 @@ local PipelineRequestCodeReview = {
     ]
 };
 
-local PipelineDeployToTest = {
+local PipelineBuildForUAT = {
     kind: "pipeline",
     type: "docker",
-    name: "Deploy to test stage",
+    name: "Build for UAT stage",
     trigger: {
-        event: ["promote"],
-        target: ['test'],
+        branch: ['uat'],
+        event: ['push']
     },
     steps: [
         {
-            name: "Build for test",
+            name: "Install",
+            image: "composer",
+            commands: [
+                "composer install"
+            ]
+        }
+    ],
+};
+
+local PipelineDeployToUAT = {
+    kind: "pipeline",
+    type: "docker",
+    name: "Deploy to UAT stage",
+    trigger: {
+        event: ["promote"],
+        target: ['UAT'],
+    },
+    steps: [
+        {
+            name: "Build for UAT",
             image: "alpine",
             commands: [
-                "echo \"start build for test\"",
+                "echo \"start build for UAT\"",
             ]
         }
     ]
 }
 
 [
-    PipelineBasic,
-    PipelineBuild,
     PipelineRequestCodeReview,
-    PipelineDeployToTest
+    PipelineBuildForUAT,
+    PipelineDeployToUAT
 ]
