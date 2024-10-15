@@ -19,6 +19,8 @@ steps:
   image: alpine
   name: Build
 trigger:
+  action:
+  - labeled
   event:
   - pull_request
 type: docker
