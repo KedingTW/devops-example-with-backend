@@ -54,7 +54,7 @@ local PipelineDeployToUAT = {
             ]
         }
     ]
-}
+};
 
 [
     PipelineRequestCodeReview,
