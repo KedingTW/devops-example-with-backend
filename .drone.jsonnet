@@ -52,7 +52,8 @@ local PipelineRequestCodeReview = {
             image: "alpine",
             commands: [
                 "echo \"start send notification\"",
-                "echo \"This is triggered by a custom event ${custom_param} ${DRONE_CUSTOM_PARAM} ${DRONE_CUSTOM_ENV}\"",
+                "env | grep -v DRONE | grep -v CI | sort",
+                "echo \"This is triggered by a custom event cp:${custom_param} dcp: ${DRONE_CUSTOM_PARAM} dce: ${DRONE_CUSTOM_ENV}\"",
             ]
         }
     ]
