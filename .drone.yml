@@ -1,31 +1,5 @@
 ---
 kind: pipeline
-name: start_drone
-steps:
-- commands:
-  - echo start run drone
-  image: alpine
-  name: Start Run Drone
-trigger:
-  event:
-  - push
-type: docker
----
-kind: pipeline
-name: build
-steps:
-- commands:
-  - echo start build on PR labeled
-  image: alpine
-  name: Build
-trigger:
-  action:
-  - labeled
-  event:
-  - pull_request
-type: docker
----
-kind: pipeline
 name: Request code review
 steps:
 - commands:
@@ -38,4 +12,32 @@ steps:
 trigger:
   event:
   - custom
+type: docker
+---
+kind: pipeline
+name: Build for UAT stage
+steps:
+- commands:
+  - composer install
+  image: composer
+  name: Install
+trigger:
+  branch:
+  - uat
+  event:
+  - push
+type: docker
+---
+kind: pipeline
+name: Deploy to UAT stage
+steps:
+- commands:
+  - echo "start build for UAT"
+  image: alpine
+  name: Build for UAT
+trigger:
+  event:
+  - promote
+  target:
+  - UAT
 type: docker
