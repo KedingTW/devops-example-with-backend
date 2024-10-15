@@ -16,3 +16,7 @@ Route::get('/user/{id}', [UserController::class, 'show']);
 Route::get('/new1', function() {
     return ['new1' => 'ok'];
 });
+
+Route::get('/new2', function() {
+    return ['new2' => 'ok'];
+});
