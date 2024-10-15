@@ -15,7 +15,6 @@ local PipelineBuild = {
         }
     ],
     trigger: {
-    //     branch: ['main'],
         event: ['pull_request'],
         action: ['labeled'],
     }
@@ -59,8 +58,28 @@ local PipelineRequestCodeReview = {
     ]
 };
 
+local PipelineDeployToTest = {
+    kind: "pipeline",
+    type: "docker",
+    name: "Deploy to test stage",
+    trigger: {
+        event: ["promote"],
+        target: ['test'],
+    },
+    steps: [
+        {
+            name: "Build for test",
+            image: "alpine",
+            commands: [
+                "echo \"start build for test\"",
+            ]
+        }
+    ]
+}
+
 [
     PipelineBasic,
     PipelineBuild,
-    PipelineRequestCodeReview
+    PipelineRequestCodeReview,
+    PipelineDeployToTest
 ]
