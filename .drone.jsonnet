@@ -25,6 +25,9 @@ local PipelineBasic = {
     kind: "pipeline",
     type: "docker",
     name: "start_drone",
+    trigger: {
+       event: ['push']
+    },
     steps: [
         {
             name: "Start Run Drone",

@@ -6,6 +6,9 @@ steps:
   - echo start run drone
   image: alpine
   name: Start Run Drone
+trigger:
+  event:
+  - push
 type: docker
 ---
 kind: pipeline
