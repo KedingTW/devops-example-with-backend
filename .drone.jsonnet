@@ -52,7 +52,7 @@ local PipelineRequestCodeReview = {
             image: "alpine",
             commands: [
                 "echo \"start send notification\"",
-                "env | grep -v DRONE | grep -v CI | sort",
+                "env",
                 "echo \"This is triggered by a custom event cp:${custom_param} dcp: ${DRONE_CUSTOM_PARAM} dce: ${DRONE_CUSTOM_ENV}\"",
             ]
         }
