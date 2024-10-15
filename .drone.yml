@@ -32,6 +32,10 @@ kind: pipeline
 name: Deploy to UAT stage
 steps:
 - commands:
+  - composer install
+  image: composer
+  name: Install
+- commands:
   - echo "start build for UAT"
   - ls -al
   image: alpine

@@ -47,6 +47,13 @@ local PipelineDeployToUAT = {
     },
     steps: [
         {
+            name: "Install",
+            image: "composer",
+            commands: [
+                "composer install"
+            ]
+        },
+        {
             name: "Build for UAT",
             image: "alpine",
             commands: [
