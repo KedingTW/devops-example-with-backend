@@ -24,3 +24,16 @@ trigger:
   event:
   - pull_request
 type: docker
+---
+kind: pipeline
+name: Request code review
+steps:
+- commands:
+  - echo "start send notification"
+  - echo "This is triggered by a custom event ${DRONE_CUSTOM_PARAM} ${DRONE_CUSTOM_ENV}"
+  image: alpine
+  name: Send notification
+trigger:
+  event:
+  - custom
+type: docker

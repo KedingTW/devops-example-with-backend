@@ -44,17 +44,15 @@ local PipelineRequestCodeReview = {
     type: "docker",
     name: "Request code review",
     trigger: {
-        event: ['custom'],
+        event: ["custom"],
     },
     steps: [
         {
             name: "Send notification",
             image: "alpine",
             commands: [
-                "echo start send notification",
-                "echo 'This is triggered by a custom event'",
-                "echo 'Custom parameter value: ${DRONE_CUSTOM_PARAM}'",
-                "echo 'Environment: ${DRONE_CUSTOM_ENV}'"
+                "echo \"start send notification\"",
+                "echo \"This is triggered by a custom event ${DRONE_CUSTOM_PARAM} ${DRONE_CUSTOM_ENV}\"",
             ]
         }
     ]
@@ -63,4 +61,5 @@ local PipelineRequestCodeReview = {
 [
     PipelineBasic,
     PipelineBuild,
+    PipelineRequestCodeReview
 ]
