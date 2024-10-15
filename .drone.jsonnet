@@ -51,6 +51,7 @@ local PipelineDeployToUAT = {
             image: "alpine",
             commands: [
                 "echo \"start build for UAT\"",
+                "ls -al"
             ]
         }
     ]
