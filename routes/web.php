@@ -12,3 +12,7 @@ Route::get('/api/test', function() {
 });
 
 Route::get('/user/{id}', [UserController::class, 'show']);
+
+Route::get('/new1', function() {
+    return ['new1' => 'ok'];
+});
