@@ -15,7 +15,7 @@ steps:
   - echo start build on PR labeled
   image: alpine
   name: Build
-  when:
-    event:
-    - pull_request
+trigger:
+  event:
+  - pull_request
 type: docker
