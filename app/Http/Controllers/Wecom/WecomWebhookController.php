@@ -49,7 +49,7 @@ class WecomWebhookController extends Controller
             }
             Log::debug(($encryptedMsg));
             $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId, );
-            $decryptedMessage = $wxcrypt->decrypt($encryptedMsg);
+            $decryptedMessage = $wxcrypt->decryptMessage($encryptedMsg);
             if (!$decryptedMessage) {
                 return new Response('Decryption failed', 500);
             }
