@@ -50,7 +50,8 @@ class WecomWebhookController extends Controller
                 return response('Invalid parameters', 400);
             }
             Log::debug(($encryptedMsg));
-            $wxcrypt = new WXBizMessageCrypt($this->token, $this->encodingAesKey, $this->corpId,);
+            $wxcrypt = new WXBizMessageCrypt($this->token, $this->encodingAesKey, $this->corpId);
+            Log::debug('aa', ['messageSignature' => $messageSignature, 'timestamp' => $timestamp, 'nonce' => $nonce, 'encryptedMsg' => $encryptedMsg]);
             $decryptedMessage = $wxcrypt->verifyMessageSignature($messageSignature, $timestamp, $nonce, $encryptedMsg);
             Log::debug('aa', ['decryptedMessage' => $decryptedMessage]);
             if (!$decryptedMessage) {
