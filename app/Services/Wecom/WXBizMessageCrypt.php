@@ -27,7 +27,6 @@ class WXBizMessageCrypt
 
     public function verifyURL(string $messageSignature, string $timestamp, string $nonce, string $echoStr): string|false
     {
-        // 不进行 urldecode，直接使用原始的 echoStr
         if (!$this->verifyMessageSignature($messageSignature, $timestamp, $nonce, $echoStr)) {
             Log::error('Signature verification failed');
             return false;
@@ -66,6 +65,7 @@ class WXBizMessageCrypt
     {
         Log::debug('token', ['token' => $this->token]);
         $array = [$this->token, $timestamp, $nonce, $encryptedMessage];
+        Log::debug('Array to be sorted', ['array' => $array]);
         sort($array, SORT_STRING);
         $str = implode($array);
         $calculatedSignature = sha1($str);
