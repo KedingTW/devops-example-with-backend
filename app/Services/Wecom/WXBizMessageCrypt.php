@@ -43,6 +43,7 @@ class WXBizMessageCrypt
 
     public function verifyMessage($messageSignature, $timestamp, $nonce, $body)
     {
+        Log::debug('Received message', ['body' => $body]);
         $xml = simplexml_load_string($body, 'SimpleXMLElement', LIBXML_NOCDATA);
         $encryptedMessage = $xml->Encrypt[0];
         if (!$this->verifyMessageSignature($messageSignature, $timestamp, $nonce, $encryptedMessage)) {
