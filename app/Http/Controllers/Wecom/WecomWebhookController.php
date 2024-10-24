@@ -43,19 +43,26 @@ class WecomWebhookController extends Controller
 
             // 初始化加解密类
             $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId);
-            
+
             // 验证URL有效性
             $msg = $wxcrypt->verifyURL($msgSignature, $timestamp, $nonce, $echostr);
-            
+
             if ($msg === false) {
                 Log::error('WeChatVerification failed');
+                Log::debug('msg false', [
+                    'input_params' => $request->all(),
+                    'config' => [
+                        'token' => config('wechat.token'),
+                        'encoding_aes_key' => config('wechat.encoding_aes_key'),
+                        'corp_id' => config('wechat.corp_id')
+                    ]
+                ]);
                 return response('Verification failed', 401);
             }
 
             // 返回解密后的明文（不带引号、BOM头和换行符）
             return response(trim($msg))
                 ->header('Content-Type', 'text/plain; charset=utf-8');
-                
         } catch (Exception $e) {
             Log::error('WeChatVerification error: ' . $e->getMessage());
             return response('Server error', 500);
