@@ -44,16 +44,16 @@ class WecomWebhookController extends Controller
             $messageSignature = $request->input('msg_signature');
             $timestamp = $request->input('timestamp');
             $nonce = $request->input('nonce');
-            $encryptedMsg = $request->getContent();
+            $encryptedMessage = $request->getContent();
             // 验证必要参数
-            if (!$messageSignature || !$timestamp || !$nonce || !$encryptedMsg) {
+            if (!$messageSignature || !$timestamp || !$nonce || !$encryptedMessage) {
                 return response('Invalid parameters', 400);
             }
-            Log::debug(($encryptedMsg));
+            Log::debug('encryptedMessage', ['encryptedMessage' => $encryptedMessage]);
             $wxcrypt = new WXBizMessageCrypt($this->token, $this->encodingAesKey, $this->corpId);
-            Log::debug('aa', ['messageSignature' => $messageSignature, 'timestamp' => $timestamp, 'nonce' => $nonce, 'encryptedMsg' => $encryptedMsg]);
-            $decryptedMessage = $wxcrypt->verifyMessageSignature($messageSignature, $timestamp, $nonce, $encryptedMsg);
-            Log::debug('aa', ['decryptedMessage' => $decryptedMessage]);
+            Log::debug('input', ['messageSignature' => $messageSignature, 'timestamp' => $timestamp, 'nonce' => $nonce, 'encryptedMessage' => $encryptedMessage]);
+            $decryptedMessage = $wxcrypt->verifyMessageSignature($messageSignature, $timestamp, $nonce, $encryptedMessage);
+            Log::debug('de', ['decryptedMessage' => $decryptedMessage]);
             if (!$decryptedMessage) {
                 return new Response('Decryption failed', 500);
             }
