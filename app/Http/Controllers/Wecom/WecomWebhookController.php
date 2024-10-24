@@ -110,6 +110,7 @@ class WecomWebhookController extends Controller
     public function verify(Request $request): Response
     {
         try {
+            Log::debug('verify', ['input' => $request->all()]);
             // 获取请求参数
             $messageSignature = $request->input('msg_signature');
             $timestamp = $request->input('timestamp');
