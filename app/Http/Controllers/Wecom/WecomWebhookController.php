@@ -9,7 +9,9 @@ use App\Services\Wecom\WecomService;
 use App\Services\Wecom\WXBizMsgCrypt;
 use Exception;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
 
 class WecomWebhookController extends Controller
 {
@@ -20,7 +22,7 @@ class WecomWebhookController extends Controller
         $this->wecomService = $wecomService;
     }
 
-    public function verify(Request $request)
+    public function verify(Request $request): Response
     {
         try {
             // 从配置文件获取参数
