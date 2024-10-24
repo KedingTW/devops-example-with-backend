@@ -8,6 +8,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/wecom/webhook', [WecomWebhookController::class, 'check']);
-Route::post('/wecom/webhook', [WecomWebhookController::class, 'receive']);
+Route::group(['prefix' => 'wecom'], function () {
+    Route::get('webhook', [WecomWebhookController::class, 'check']);
+    Route::post('webhook', [WecomWebhookController::class, 'receive']);
+});
 Route::post('/line/webhook', [LineWebhookController::class, 'receive']);
