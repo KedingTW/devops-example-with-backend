@@ -46,6 +46,7 @@ class WXBizMessageCrypt
         Log::debug('Received message', ['body' => $body]);
         $xml = simplexml_load_string($body, 'SimpleXMLElement', LIBXML_NOCDATA);
         $encryptedMessage = $xml->Encrypt[0];
+        Log::debug('Encrypted message', ['xml' => $xml]);
         if (!$this->verifyMessageSignature($messageSignature, $timestamp, $nonce, $encryptedMessage)) {
             Log::error('Signature verification failed');
             return false;
