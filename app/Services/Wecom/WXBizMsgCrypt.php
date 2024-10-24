@@ -2,6 +2,8 @@
 
 namespace App\Services\Wecom;
 
+use Illuminate\Support\Facades\Log;
+
 class WXBizMsgCrypt
 {
     private string $token;
@@ -26,7 +28,10 @@ class WXBizMsgCrypt
     public function verifyURL(string $msgSignature, string $timestamp, string $nonce, string $echoStr): string|false
     {
         $echoStr = urldecode($echoStr);
-
+        Log::debug($msgSignature);
+        Log::debug($nonce);
+        Log::debug($echoStr);
+        Log::debug($timestamp);
         if (!$this->verifyMsgSignature($msgSignature, $timestamp, $nonce, $echoStr)) {
             return false;
         }
