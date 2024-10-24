@@ -35,7 +35,10 @@ class WecomWebhookController extends Controller
             $timestamp = $request->input('timestamp');
             $nonce = $request->input('nonce');
             $echostr = $request->input('echostr');
-
+            Log::debug($token);
+            Log::debug($encodingAesKey);
+            Log::debug($corpId);
+            Log::debug($echostr);
             // 验证必要参数
             if (!$msgSignature || !$timestamp || !$nonce || !$echostr) {
                 Log::error('WeChatVerification missing parameters');
