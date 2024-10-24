@@ -51,7 +51,7 @@ class WecomWebhookController extends Controller
             }
             Log::debug('encryptedMessage', ['encryptedMessage' => $encryptedMessage]);
             $wxcrypt = new WXBizMessageCrypt($this->token, $this->encodingAesKey, $this->corpId);
-            Log::debug('input', ['messageSignature' => $messageSignature, 'timestamp' => $timestamp, 'nonce' => $nonce, 'encryptedMessage' => $encryptedMessage]);
+            Log::debug('input', ['messageSignature' => $messageSignature, 'timestamp' => $timestamp, 'nonce' => $nonce]);
             $decryptedMessage = $wxcrypt->verifyMessageSignature($messageSignature, $timestamp, $nonce, $encryptedMessage);
             Log::debug('de', ['decryptedMessage' => $decryptedMessage]);
             if (!$decryptedMessage) {

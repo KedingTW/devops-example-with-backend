@@ -64,12 +64,14 @@ class WXBizMessageCrypt
 
     public function verifyMessageSignature(string $messageSignature, string $timestamp, string $nonce, string $encryptedMessage): bool
     {
+        Log::debug('token', ['token' => $this->token]);
         $array = [$this->token, $timestamp, $nonce, $encryptedMessage];
         sort($array, SORT_STRING);
         $str = implode($array);
         $calculatedSignature = sha1($str);
         Log::debug('Calculated signature', [
-            'calculatedSignature' => $calculatedSignature, 'messageSignature' => $messageSignature
+            'calculatedSignature' => $calculatedSignature,
+            'messageSignature' => $messageSignature
         ]);
         return $calculatedSignature === $messageSignature;
     }
