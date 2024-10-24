@@ -28,6 +28,8 @@ class WebhookController extends Controller
         $client = new BedrockAgentRuntimeClient([
             'region' => 'us-east-1',
             'credentials' => [
+                'key' => env('AWS_ACCESS_KEY'),
+                'secret' => env('AWS_SECRET_KEY'),
             ],
             'version' => 'latest',
         ]);
