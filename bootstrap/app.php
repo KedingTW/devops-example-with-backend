@@ -12,7 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
-            'line/webhook' // <-- exclude this route
+            'line/webhook',
+            'wecom/webhook'
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
