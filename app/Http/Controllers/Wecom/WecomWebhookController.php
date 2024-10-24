@@ -48,8 +48,8 @@ class WecomWebhookController extends Controller
                 return response('Invalid parameters', 400);
             }
             Log::debug(($encryptedMsg));
-            $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId, );
-            $decryptedMessage = $wxcrypt->decryptMessage($encryptedMsg);
+            $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId,);
+            $decryptedMessage = $wxcrypt->verifyMsgSignature($msgSignature, $timestamp, $nonce, $encryptedMsg);
             if (!$decryptedMessage) {
                 return new Response('Decryption failed', 500);
             }
@@ -63,39 +63,39 @@ class WecomWebhookController extends Controller
                 $reply = '暂不支持处理此消息类型。';
             }
             Log::debug($reply);
-        //     $result = $client->retrieveAndGenerate([
-        //         'input' => [
-        //             'text' => $message->events[0]->message->text,
-        //         ],
-        //         // 'sessionId' => 'be7b6adf-990c-46a7-a7dd-6cbe19c0d118',
-        //         'retrieveAndGenerateConfiguration' => [
-        //             'type' => 'KNOWLEDGE_BASE',
-        //             // 'type' => 'EXTERNAL_SOURCES',
-        //             'knowledgeBaseConfiguration' => [
-        //                 'knowledgeBaseId' => 'SWRVOSBX7U',
-        //                 // Llama 3 2 11B Instruct
-        //                 // 'modelArn' => 'arn:aws:bedrock:us-east-1:699475932583:inference-profile/us.meta.llama3-2-11b-instruct-v1:0',
-        //                 // Llama 3 2 90B Instruct
-        //                 // 'modelArn'=>'arn:aws:bedrock:us-east-1:699475932583:inference-profile/us.meta.llama3-2-90b-instruct-v1:0',
-        //                 // Claude 3 Haiku
-        //                 'modelArn' => 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-haiku-20240307-v1:0',
-        //                 // Claude 3.5 Sonnet
-        //                 // 'modelArn' => 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0',
-        //                 'retrievalConfiguration' => [
-        //                     'vectorSearchConfiguration' => [
-        //                         'numberOfResults' => 5
-        //                     ]
-        //                 ],
-        //                 'generationConfiguration' => [
-        //                     'maxTokens' => 1024,
-        //                     'temperature' => 1,
-        //                     'topP' => 1
-        //                 ]
-        //             ],
-        //         ],
-        //     ]);
-        //     // .PHP_EOL.$result['sessionId']
-        //     $this->wecomService->reply($result['output']['text'] . PHP_EOL . $result['sessionId'], $replyToken);
+            //     $result = $client->retrieveAndGenerate([
+            //         'input' => [
+            //             'text' => $message->events[0]->message->text,
+            //         ],
+            //         // 'sessionId' => 'be7b6adf-990c-46a7-a7dd-6cbe19c0d118',
+            //         'retrieveAndGenerateConfiguration' => [
+            //             'type' => 'KNOWLEDGE_BASE',
+            //             // 'type' => 'EXTERNAL_SOURCES',
+            //             'knowledgeBaseConfiguration' => [
+            //                 'knowledgeBaseId' => 'SWRVOSBX7U',
+            //                 // Llama 3 2 11B Instruct
+            //                 // 'modelArn' => 'arn:aws:bedrock:us-east-1:699475932583:inference-profile/us.meta.llama3-2-11b-instruct-v1:0',
+            //                 // Llama 3 2 90B Instruct
+            //                 // 'modelArn'=>'arn:aws:bedrock:us-east-1:699475932583:inference-profile/us.meta.llama3-2-90b-instruct-v1:0',
+            //                 // Claude 3 Haiku
+            //                 'modelArn' => 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-haiku-20240307-v1:0',
+            //                 // Claude 3.5 Sonnet
+            //                 // 'modelArn' => 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0',
+            //                 'retrievalConfiguration' => [
+            //                     'vectorSearchConfiguration' => [
+            //                         'numberOfResults' => 5
+            //                     ]
+            //                 ],
+            //                 'generationConfiguration' => [
+            //                     'maxTokens' => 1024,
+            //                     'temperature' => 1,
+            //                     'topP' => 1
+            //                 ]
+            //             ],
+            //         ],
+            //     ]);
+            //     // .PHP_EOL.$result['sessionId']
+            //     $this->wecomService->reply($result['output']['text'] . PHP_EOL . $result['sessionId'], $replyToken);
         } catch (Exception $error) {
             Log::error('WecomWebhookController error: ' . $error->getMessage());
             return response('Server error', 500);
