@@ -2,11 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Line\LineWebhookController;
+use App\Http\Controllers\Wecom\WecomWebhookController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 
-Route::post('/wecom/webhook', [LineWebhookController::class, 'receive']);
+Route::post('/wecom/webhook', [WecomWebhookController::class, 'receive']);
 Route::post('/line/webhook', [LineWebhookController::class, 'receive']);
