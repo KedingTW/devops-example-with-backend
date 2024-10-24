@@ -53,19 +53,11 @@ class WecomWebhookController extends Controller
             $encryptedMessage = $xml->Encrypt[0];
             $wxcrypt = new WXBizMessageCrypt($this->token, $this->encodingAesKey, $this->corpId);
             $decryptedMessage = $wxcrypt->verifyMessageSignature($messageSignature, $timestamp, $nonce, $encryptedMessage);
-            Log::debug('de', ['decryptedMessage' => $decryptedMessage]);
             if (!$decryptedMessage) {
                 return new Response('Decryption failed', 500);
             }
-            // $xml = simplexml_load_string($decryptedMessage, 'SimpleXMLElement', LIBXML_NOCDATA);
-            // $msgType = (string) $xml->MsgType;
-            // // 回應不同消息類型
-            // if ($msgType === 'text') {
-            //     $content = (string) $xml->Content;
-            //     $reply = '你发送了文字消息：' . $content;
-            // } else {
-            //     $reply = '暂不支持处理此消息类型。';
-            // }
+            $message = $wxcrypt->decryptMessage($encryptedMessage);
+            Log::debug(($message));
             // Log::debug($reply);
             //     $result = $client->retrieveAndGenerate([
             //         'input' => [
