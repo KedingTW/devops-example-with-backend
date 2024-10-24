@@ -41,22 +41,23 @@ class WXBizMessageCrypt
         return $decrypted;
     }
 
-    public function decryptMessage($encryptedMessage)
+    public function verifyMessage($messageSignature, $timestamp, $nonce, $body)
     {
-        $ciphertext = base64_decode($encryptedMessage);
-        $decrypted = openssl_decrypt($ciphertext, 'aes-256-cbc', $this->key, OPENSSL_RAW_DATA, $this->iv);
-        if (!$decrypted) {
+        $xml = simplexml_load_string($body, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $encryptedMessage = $xml->Encrypt[0];
+        if (!$this->verifyMessageSignature($messageSignature, $timestamp, $nonce, $encryptedMessage)) {
+            Log::error('Signature verification failed');
             return false;
         }
-        // 去除补位字符
-        $pad = ord(substr($decrypted, -1));
-        $decrypted = substr($decrypted, 0, -$pad);
-        // 解析消息体
-        $xmlLen = unpack('N', substr($decrypted, 16, 4))[1];
-        $xml = substr($decrypted, 20, $xmlLen);
-
-        return $xml;
+        $decrypted = $this->decrypt($encryptedMessage);
+        if ($decrypted === false) {
+            Log::error('Decryption failed');
+            return false;
+        }
+        $message = simplexml_load_string($decrypted, 'SimpleXMLElement', LIBXML_NOCDATA);
+        return $message;
     }
+
 
     public function verifyMessageSignature(string $messageSignature, string $timestamp, string $nonce, string $encryptedMessage): bool
     {

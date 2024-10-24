@@ -49,17 +49,11 @@ class WecomWebhookController extends Controller
             if (!$messageSignature || !$timestamp || !$nonce || !$body) {
                 return response('Invalid parameters', 400);
             }
-            $xml = simplexml_load_string($body, 'SimpleXMLElement', LIBXML_NOCDATA);
-            $encryptedMessage = $xml->Encrypt[0];
+            
             $wxcrypt = new WXBizMessageCrypt($this->token, $this->encodingAesKey, $this->corpId);
-            $decryptedMessage = $wxcrypt->verifyMessageSignature($messageSignature, $timestamp, $nonce, $encryptedMessage);
-            if (!$decryptedMessage) {
-                return new Response('Decryption failed', 500);
-            }
-            $message = $wxcrypt->decryptMessage($encryptedMessage);
-            $message2 = $wxcrypt->decrypt($encryptedMessage);
+            $message = $wxcrypt->verifyMessage($messageSignature, $timestamp, $nonce, $body);
+
             Log::debug(($message));
-            Log::debug(($message2));
             // Log::debug($reply);
             //     $result = $client->retrieveAndGenerate([
             //         'input' => [
