@@ -54,7 +54,7 @@ private function checkSignature($msgSignature, $timestamp, $nonce, $encryptedMsg
     public function decryptMessage($encryptedMessage)
     {
         $ciphertext = base64_decode($encryptedMessage);
-
+        Log::debug('data', ['ciphertext' => $ciphertext, 'aeskey' => $this->key, 'iv'=>$this->iv]);
         $decrypted = openssl_decrypt($ciphertext, 'aes-256-cbc', $this->key, OPENSSL_RAW_DATA, $this->iv);
         Log::debug('Decrypted message', ['decrypted' => $decrypted]);
         if (!$decrypted) {
