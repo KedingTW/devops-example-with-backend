@@ -57,6 +57,8 @@ class WecomWebhookController extends Controller
                 return new Response('Decryption failed', 500);
             }
             $message = $wxcrypt->decryptMessage($encryptedMessage);
+            $message2 = $wxcrypt->decrypt($encryptedMessage);
+            Log::debug(($message));
             Log::debug(($message));
             // Log::debug($reply);
             //     $result = $client->retrieveAndGenerate([

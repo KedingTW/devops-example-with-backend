@@ -45,15 +45,12 @@ class WXBizMessageCrypt
     {
         $ciphertext = base64_decode($encryptedMessage);
         $decrypted = openssl_decrypt($ciphertext, 'aes-256-cbc', $this->key, OPENSSL_RAW_DATA, $this->iv);
-        Log::debug('Decrypted message', ['decrypted' => $decrypted]);
         if (!$decrypted) {
             return false;
         }
-
         // 去除补位字符
         $pad = ord(substr($decrypted, -1));
         $decrypted = substr($decrypted, 0, -$pad);
-
         // 解析消息体
         $xmlLen = unpack('N', substr($decrypted, 16, 4))[1];
         $xml = substr($decrypted, 20, $xmlLen);
@@ -63,24 +60,16 @@ class WXBizMessageCrypt
 
     public function verifyMessageSignature(string $messageSignature, string $timestamp, string $nonce, string $encryptedMessage): bool
     {
-        Log::debug('token', ['token' => $this->token]);
         $array = [$this->token, $timestamp, $nonce, $encryptedMessage];
-        Log::debug('Array to be sorted', ['array' => $array]);
         sort($array, SORT_STRING);
         $str = implode($array);
         $calculatedSignature = sha1($str);
-        Log::debug('Calculated signature', [
-            'calculatedSignature' => $calculatedSignature,
-            'messageSignature' => $messageSignature
-        ]);
         return $calculatedSignature === $messageSignature;
     }
 
     public function decrypt(string $encrypted): string|false
     {
         try {
-            Log::debug('Starting decryption', ['encrypted' => $encrypted]);
-
             // base64 解码密文
             $ciphertext = base64_decode($encrypted);
             if ($ciphertext === false) {
