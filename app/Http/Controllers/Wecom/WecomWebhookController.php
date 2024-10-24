@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use Aws\BedrockAgentRuntime\BedrockAgentRuntimeClient;
 
 use App\Services\Wecom\WecomService;
+use App\Services\Wecom\WXBizMsgCrypt;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 
 class WecomWebhookController extends Controller
 {
@@ -18,10 +20,45 @@ class WecomWebhookController extends Controller
         $this->wecomService = $wecomService;
     }
 
-    public function check()
+    public function verify(Request $request)
     {
-        Log::info($_GET);
-        return $_GET;
+        try {
+            // 从配置文件获取参数
+            $token = env('WECOM_TOKEN');
+            $encodingAesKey = env('WECOM_ENCODING_AES_KEY');
+            $corpId = env('WECOM_CORP_ID');
+
+            // 获取请求参数
+            $msgSignature = $request->query('msg_signature');
+            $timestamp = $request->query('timestamp');
+            $nonce = $request->query('nonce');
+            $echostr = $request->query('echostr');
+
+            // 验证必要参数
+            if (!$msgSignature || !$timestamp || !$nonce || !$echostr) {
+                Log::error('WeChatVerification missing parameters');
+                return response('Invalid parameters', 400);
+            }
+
+            // 初始化加解密类
+            $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId);
+            
+            // 验证URL有效性
+            $msg = $wxcrypt->verifyURL($msgSignature, $timestamp, $nonce, $echostr);
+            
+            if ($msg === false) {
+                Log::error('WeChatVerification failed');
+                return response('Verification failed', 401);
+            }
+
+            // 返回解密后的明文（不带引号、BOM头和换行符）
+            return response(trim($msg))
+                ->header('Content-Type', 'text/plain; charset=utf-8');
+                
+        } catch (Exception $e) {
+            Log::error('WeChatVerification error: ' . $e->getMessage());
+            return response('Server error', 500);
+        }
     }
 
     public function receive()

@@ -9,7 +9,7 @@ Route::get('/', function () {
 });
 
 Route::group(['prefix' => 'wecom'], function () {
-    Route::get('webhook', [WecomWebhookController::class, 'check']);
+    Route::get('webhook', [WecomWebhookController::class, 'verify']);
     Route::post('webhook', [WecomWebhookController::class, 'receive']);
 });
 Route::post('/line/webhook', [LineWebhookController::class, 'receive']);
