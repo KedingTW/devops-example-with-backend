@@ -33,7 +33,24 @@ class WecomWebhookController extends Controller
         //     'version' => 'latest',
         // ]);
         try {
-            Log::debug($request->all());
+            // 从配置文件获取参数
+            $token = env('WECOM_TOKEN');
+            $encodingAesKey = env('WECOM_ENCODING_AES_KEY');
+            $corpId = env('WECOM_CORP_ID');
+
+            // 获取请求参数
+            $msgSignature = $request->input('msg_signature');
+            $timestamp = $request->input('timestamp');
+            $nonce = $request->input('nonce');
+            $encryptedMsg = $request->getContent();
+            // 验证必要参数
+            if (!$msgSignature || !$timestamp || !$nonce || $encryptedMsg) {
+                return response('Invalid parameters', 400);
+            }
+            Log::debug(($encryptedMsg));
+            // 初始化加解密类
+            // $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId, );
+            // $wxcrypt->
         //     $result = $client->retrieveAndGenerate([
         //         'input' => [
         //             'text' => $message->events[0]->message->text,
@@ -71,7 +88,7 @@ class WecomWebhookController extends Controller
             Log::error('WecomWebhookController error: ' . $error->getMessage());
             return response('Server error', 500);
         }
-        return response();
+        return response([]);
     }
 
     public function verify(Request $request): Response

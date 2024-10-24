@@ -27,13 +27,6 @@ class WXBizMsgCrypt
     
     public function verifyURL(string $msgSignature, string $timestamp, string $nonce, string $echoStr): string|false
     {
-        Log::debug('Verification process started', [
-            'msgSignature' => $msgSignature,
-            'timestamp' => $timestamp,
-            'nonce' => $nonce,
-            'echoStr' => $echoStr
-        ]);
-
         // 不进行 urldecode，直接使用原始的 echoStr
         if (!$this->verifyMsgSignature($msgSignature, $timestamp, $nonce, $echoStr)) {
             Log::error('Signature verification failed');
@@ -47,6 +40,30 @@ class WXBizMsgCrypt
         }
 
         return $decrypted;
+    }
+
+    private function decryptMessage($encryptedMessage)
+    {
+        $aesKey = base64_decode($this->encodingAesKey . '=');
+        $ciphertext = base64_decode($encryptedMessage);
+
+        // 解密算法
+        $iv = substr($aesKey, 0, 16);
+        $decrypted = openssl_decrypt($ciphertext, 'aes-256-cbc', $aesKey, OPENSSL_RAW_DATA, $iv);
+
+        if (!$decrypted) {
+            return false;
+        }
+
+        // 去除补位字符
+        $pad = ord(substr($decrypted, -1));
+        $decrypted = substr($decrypted, 0, -$pad);
+
+        // 解析消息体
+        $xmlLen = unpack('N', substr($decrypted, 16, 4))[1];
+        $xml = substr($decrypted, 20, $xmlLen);
+
+        return $xml;
     }
     
     private function verifyMsgSignature(string $msgSignature, string $timestamp, string $nonce, string $encryptedMsg): bool
