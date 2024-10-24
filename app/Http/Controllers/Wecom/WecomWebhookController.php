@@ -44,13 +44,25 @@ class WecomWebhookController extends Controller
             $nonce = $request->input('nonce');
             $encryptedMsg = $request->getContent();
             // 验证必要参数
-            // if (!$msgSignature || !$timestamp || !$nonce || $encryptedMsg) {
-            //     return response('Invalid parameters', 400);
-            // }
+            if (!$msgSignature || !$timestamp || !$nonce || !$encryptedMsg) {
+                return response('Invalid parameters', 400);
+            }
             Log::debug(($encryptedMsg));
-            // 初始化加解密类
-            // $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId, );
-            // $wxcrypt->
+            $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId, );
+            $decryptedMessage = $wxcrypt->decryptMessage($encryptedMsg);
+            if (!$decryptedMessage) {
+                return new Response('Decryption failed', 500);
+            }
+            $xml = simplexml_load_string($decryptedMessage, 'SimpleXMLElement', LIBXML_NOCDATA);
+            $msgType = (string) $xml->MsgType;
+            // 回應不同消息類型
+            if ($msgType === 'text') {
+                $content = (string) $xml->Content;
+                $reply = '你发送了文字消息：' . $content;
+            } else {
+                $reply = '暂不支持处理此消息类型。';
+            }
+            Log::debug($reply);
         //     $result = $client->retrieveAndGenerate([
         //         'input' => [
         //             'text' => $message->events[0]->message->text,

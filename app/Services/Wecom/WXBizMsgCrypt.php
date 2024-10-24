@@ -41,8 +41,17 @@ class WXBizMsgCrypt
 
         return $decrypted;
     }
+private function checkSignature($msgSignature, $timestamp, $nonce, $encryptedMsg)
+    {
+        $array = [$this->token, $timestamp, $nonce, $encryptedMsg];
+        sort($array, SORT_STRING);
+        $str = implode($array);
+        $signature = sha1($str);
 
-    private function decryptMessage($encryptedMessage)
+        return $signature === $msgSignature;
+    }
+
+    public function decryptMessage($encryptedMessage)
     {
         $aesKey = base64_decode($this->encodingAesKey . '=');
         $ciphertext = base64_decode($encryptedMessage);
