@@ -55,13 +55,7 @@ class WXBizMsgCrypt
         sort($array, SORT_STRING);
         $str = implode($array);
         $calculatedSignature = sha1($str);
-        
-        Log::debug('Signature verification:', [
-            'calculated' => $calculatedSignature,
-            'received' => $msgSignature,
-            'string_to_hash' => $str
-        ]);
-        
+   
         return $calculatedSignature === $msgSignature;
     }
     
@@ -119,28 +113,15 @@ class WXBizMsgCrypt
             $xmlLen = $lenList[1];
             $xml = substr($content, 4, $xmlLen);
             $fromCorpId = substr($content, $xmlLen + 4);
-            
-            Log::debug('Decryption result', [
-                'xml_length' => $xmlLen,
-                'xml' => $xml,
-                'from_corp_id' => $fromCorpId
-            ]);
-            
+
             if ($fromCorpId !== $this->corpId) {
-                Log::error('CorpId mismatch', [
-                    'expected' => $this->corpId,
-                    'received' => $fromCorpId
-                ]);
+
                 return false;
             }
             
             return $xml;
             
         } catch (Exception $e) {
-            Log::error('Decryption error', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
             return false;
         }
     }
