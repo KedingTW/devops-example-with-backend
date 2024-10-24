@@ -44,9 +44,9 @@ class WecomWebhookController extends Controller
             $nonce = $request->input('nonce');
             $encryptedMsg = $request->getContent();
             // 验证必要参数
-            if (!$msgSignature || !$timestamp || !$nonce || $encryptedMsg) {
-                return response('Invalid parameters', 400);
-            }
+            // if (!$msgSignature || !$timestamp || !$nonce || $encryptedMsg) {
+            //     return response('Invalid parameters', 400);
+            // }
             Log::debug(($encryptedMsg));
             // 初始化加解密类
             // $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId, );
