@@ -18,6 +18,12 @@ class WecomWebhookController extends Controller
         $this->wecomService = $wecomService;
     }
 
+    public function check()
+    {
+        Log::info($_GET);
+        return $_GET;
+    }
+
     public function receive()
     {
         Log::info($_GET);
