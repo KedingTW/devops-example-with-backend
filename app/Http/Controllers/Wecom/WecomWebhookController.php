@@ -29,10 +29,10 @@ class WecomWebhookController extends Controller
             $corpId = env('WECOM_CORP_ID');
 
             // 获取请求参数
-            $msgSignature = $request->query('msg_signature');
-            $timestamp = $request->query('timestamp');
-            $nonce = $request->query('nonce');
-            $echostr = $request->query('echostr');
+            $msgSignature = $request->input('msg_signature');
+            $timestamp = $request->input('timestamp');
+            $nonce = $request->input('nonce');
+            $echostr = $request->input('echostr');
 
             // 验证必要参数
             if (!$msgSignature || !$timestamp || !$nonce || !$echostr) {
