@@ -59,7 +59,7 @@ private function checkSignature($msgSignature, $timestamp, $nonce, $encryptedMsg
         // 解密算法
         $iv = substr($aesKey, 0, 16);
         $decrypted = openssl_decrypt($ciphertext, 'aes-256-cbc', $aesKey, OPENSSL_RAW_DATA, $iv);
-
+        Log::debug('Decrypted message', ['decrypted' => $decrypted]);
         if (!$decrypted) {
             return false;
         }
