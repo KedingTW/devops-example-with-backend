@@ -54,6 +54,7 @@ class WXBizMessageCrypt
             Log::error('Decryption failed');
             return false;
         }
+        Log::debug('Decrypted message', ['message' => $decrypted]);
         $message = simplexml_load_string($decrypted, 'SimpleXMLElement', LIBXML_NOCDATA);
         return $message;
     }

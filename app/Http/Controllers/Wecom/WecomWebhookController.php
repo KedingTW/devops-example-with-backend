@@ -49,11 +49,11 @@ class WecomWebhookController extends Controller
             if (!$messageSignature || !$timestamp || !$nonce || !$body) {
                 return response('Invalid parameters', 400);
             }
-            
+
             $wxcrypt = new WXBizMessageCrypt($this->token, $this->encodingAesKey, $this->corpId);
             $message = $wxcrypt->verifyMessage($messageSignature, $timestamp, $nonce, $body);
 
-            Log::debug(($message));
+            Log::debug('message', ['message' => $message]);
             // Log::debug($reply);
             //     $result = $client->retrieveAndGenerate([
             //         'input' => [
