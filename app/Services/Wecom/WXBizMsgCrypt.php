@@ -53,12 +53,9 @@ private function checkSignature($msgSignature, $timestamp, $nonce, $encryptedMsg
 
     public function decryptMessage($encryptedMessage)
     {
-        $aesKey = base64_decode($this->encodingAesKey . '=');
         $ciphertext = base64_decode($encryptedMessage);
 
-        // 解密算法
-        $iv = substr($aesKey, 0, 16);
-        $decrypted = openssl_decrypt($ciphertext, 'aes-256-cbc', $aesKey, OPENSSL_RAW_DATA, $iv);
+        $decrypted = openssl_decrypt($ciphertext, 'aes-256-cbc', $this->key, OPENSSL_RAW_DATA, $this->iv);
         Log::debug('Decrypted message', ['decrypted' => $decrypted]);
         if (!$decrypted) {
             return false;
@@ -85,7 +82,7 @@ private function checkSignature($msgSignature, $timestamp, $nonce, $encryptedMsg
         return $calculatedSignature === $msgSignature;
     }
     
-    private function decrypt(string $encrypted): string|false
+    public function decrypt(string $encrypted): string|false
     {
         try {
             Log::debug('Starting decryption', ['encrypted' => $encrypted]);
@@ -110,43 +107,32 @@ private function checkSignature($msgSignature, $timestamp, $nonce, $encryptedMsg
                 Log::error('OpenSSL decrypt failed');
                 return false;
             }
-            
-            Log::debug('Decrypted raw data', ['length' => strlen($decrypted)]);
-            
             // 获取填充值
             $pad = ord(substr($decrypted, -1));
             if ($pad < 1 || $pad > 32) {
                 Log::error('Invalid padding value', ['pad' => $pad]);
                 return false;
             }
-            
             // 去除补位
             $result = substr($decrypted, 0, (strlen($decrypted) - $pad));
-            
             // 去除16位随机字符串
             if (strlen($result) < 16) {
                 Log::error('Result too short after removing padding');
                 return false;
             }
-            
             $content = substr($result, 16);
             $lenList = unpack("N", substr($content, 0, 4));
             if (!$lenList) {
                 Log::error('Failed to unpack length');
                 return false;
             }
-            
             $xmlLen = $lenList[1];
             $xml = substr($content, 4, $xmlLen);
             $fromCorpId = substr($content, $xmlLen + 4);
-
             if ($fromCorpId !== $this->corpId) {
-
                 return false;
             }
-            
             return $xml;
-            
         } catch (Exception $e) {
             return false;
         }
