@@ -27,11 +27,16 @@ class WXBizMsgCrypt
 
     public function verifyURL(string $msgSignature, string $timestamp, string $nonce, string $echoStr): string|false
     {
+        Log::debug('WeChatVerification input params:', [
+            'msgSignature' => $msgSignature,
+            'timestamp' => $timestamp,
+            'nonce' => $nonce,
+            'echoStr' => $echoStr,
+            'token' => $this->token,
+            'corpId' => $this->corpId
+        ]);
+
         $echoStr = urldecode($echoStr);
-        Log::debug($msgSignature);
-        Log::debug($nonce);
-        Log::debug($echoStr);
-        Log::debug($timestamp);
         if (!$this->verifyMsgSignature($msgSignature, $timestamp, $nonce, $echoStr)) {
             return false;
         }
