@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Aws\BedrockAgentRuntime\BedrockAgentRuntimeClient;
 
 use App\Services\Wecom\WecomService;
-use App\Services\Wecom\WXBizMsgCrypt;
+use App\Services\Wecom\WXBizMessageCrypt;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -17,9 +17,16 @@ class WecomWebhookController extends Controller
 {
     protected $wecomService;
 
+    protected $token;
+    protected $encodingAesKey;
+    protected $corpId;
+
     public function __construct(WecomService $wecomService)
     {
         $this->wecomService = $wecomService;
+        $this->token = env('WECOM_TOKEN');
+        $this->encodingAesKey = env('WECOM_ENCODING_AES_KEY');
+        $this->corpId = env('WECOM_CORP_ID');
     }
 
     public function receive(Request $request): Response
@@ -33,37 +40,32 @@ class WecomWebhookController extends Controller
         //     'version' => 'latest',
         // ]);
         try {
-            // 从配置文件获取参数
-            $token = env('WECOM_TOKEN');
-            $encodingAesKey = env('WECOM_ENCODING_AES_KEY');
-            $corpId = env('WECOM_CORP_ID');
-
             // 获取请求参数
-            $msgSignature = $request->input('msg_signature');
+            $messageSignature = $request->input('msg_signature');
             $timestamp = $request->input('timestamp');
             $nonce = $request->input('nonce');
             $encryptedMsg = $request->getContent();
             // 验证必要参数
-            if (!$msgSignature || !$timestamp || !$nonce || !$encryptedMsg) {
+            if (!$messageSignature || !$timestamp || !$nonce || !$encryptedMsg) {
                 return response('Invalid parameters', 400);
             }
             Log::debug(($encryptedMsg));
-            $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId,);
-            $decryptedMessage = $wxcrypt->verifyMsgSignature($msgSignature, $timestamp, $nonce, $encryptedMsg);
+            $wxcrypt = new WXBizMessageCrypt($this->token, $this->encodingAesKey, $this->corpId,);
+            $decryptedMessage = $wxcrypt->verifyMessageSignature($messageSignature, $timestamp, $nonce, $encryptedMsg);
             Log::debug('aa', ['decryptedMessage' => $decryptedMessage]);
             if (!$decryptedMessage) {
                 return new Response('Decryption failed', 500);
             }
-            $xml = simplexml_load_string($decryptedMessage, 'SimpleXMLElement', LIBXML_NOCDATA);
-            $msgType = (string) $xml->MsgType;
-            // 回應不同消息類型
-            if ($msgType === 'text') {
-                $content = (string) $xml->Content;
-                $reply = '你发送了文字消息：' . $content;
-            } else {
-                $reply = '暂不支持处理此消息类型。';
-            }
-            Log::debug($reply);
+            // $xml = simplexml_load_string($decryptedMessage, 'SimpleXMLElement', LIBXML_NOCDATA);
+            // $msgType = (string) $xml->MsgType;
+            // // 回應不同消息類型
+            // if ($msgType === 'text') {
+            //     $content = (string) $xml->Content;
+            //     $reply = '你发送了文字消息：' . $content;
+            // } else {
+            //     $reply = '暂不支持处理此消息类型。';
+            // }
+            // Log::debug($reply);
             //     $result = $client->retrieveAndGenerate([
             //         'input' => [
             //             'text' => $message->events[0]->message->text,
@@ -107,34 +109,25 @@ class WecomWebhookController extends Controller
     public function verify(Request $request): Response
     {
         try {
-            // 从配置文件获取参数
-            $token = env('WECOM_TOKEN');
-            $encodingAesKey = env('WECOM_ENCODING_AES_KEY');
-            $corpId = env('WECOM_CORP_ID');
-
             // 获取请求参数
-            $msgSignature = $request->input('msg_signature');
+            $messageSignature = $request->input('msg_signature');
             $timestamp = $request->input('timestamp');
             $nonce = $request->input('nonce');
             $echostr = $request->input('echostr');
             // 验证必要参数
-            if (!$msgSignature || !$timestamp || !$nonce || !$echostr) {
+            if (!$messageSignature || !$timestamp || !$nonce || !$echostr) {
                 return response('Invalid parameters', 400);
             }
-
             // 初始化加解密类
-            $wxcrypt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId);
-
+            $wxcrypt = new WXBizMessageCrypt($this->token, $this->encodingAesKey, $this->corpId);
             // 验证URL有效性
-            $msg = $wxcrypt->verifyURL($msgSignature, $timestamp, $nonce, $echostr);
-
-            if ($msg === false) {
+            $message = $wxcrypt->verifyURL($messageSignature, $timestamp, $nonce, $echostr);
+            if ($message === false) {
                 Log::error('WeChatVerification failed');
                 return response('Verification failed', 401);
             }
-
             // 返回解密后的明文（不带引号、BOM头和换行符）
-            return response(trim($msg))
+            return response(trim($message))
                 ->header('Content-Type', 'text/plain; charset=utf-8');
         } catch (Exception $e) {
             Log::error('WeChatVerification error: ' . $e->getMessage());

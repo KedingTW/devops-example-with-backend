@@ -5,34 +5,34 @@ namespace App\Services\Wecom;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
-class WXBizMsgCrypt
+class WXBizMessageCrypt
 {
     private string $token;
     private string $encodingAesKey;
     private string $corpId;
     private string $key;
     private string $iv;
-    
+
     public function __construct(string $token, string $encodingAesKey, string $corpId)
     {
         $this->token = $token;
         $this->encodingAesKey = $encodingAesKey;
         $this->corpId = $corpId;
-        
+
         // 解码 AES key
         $aesKey = base64_decode($encodingAesKey . '=');
         $this->key = $aesKey;
         $this->iv = substr($aesKey, 0, 16);
     }
-    
-    public function verifyURL(string $msgSignature, string $timestamp, string $nonce, string $echoStr): string|false
+
+    public function verifyURL(string $messageSignature, string $timestamp, string $nonce, string $echoStr): string|false
     {
         // 不进行 urldecode，直接使用原始的 echoStr
-        if (!$this->verifyMsgSignature($msgSignature, $timestamp, $nonce, $echoStr)) {
+        if (!$this->verifyMessageSignature($messageSignature, $timestamp, $nonce, $echoStr)) {
             Log::error('Signature verification failed');
             return false;
         }
-        
+
         $decrypted = $this->decrypt($echoStr);
         if ($decrypted === false) {
             Log::error('Decryption failed');
@@ -40,15 +40,6 @@ class WXBizMsgCrypt
         }
 
         return $decrypted;
-    }
-private function checkSignature($msgSignature, $timestamp, $nonce, $encryptedMsg)
-    {
-        $array = [$this->token, $timestamp, $nonce, $encryptedMsg];
-        sort($array, SORT_STRING);
-        $str = implode($array);
-        $signature = sha1($str);
-
-        return $signature === $msgSignature;
     }
 
     public function decryptMessage($encryptedMessage)
@@ -70,29 +61,29 @@ private function checkSignature($msgSignature, $timestamp, $nonce, $encryptedMsg
 
         return $xml;
     }
-    
-    public function verifyMsgSignature(string $msgSignature, string $timestamp, string $nonce, string $encryptedMsg): bool
+
+    public function verifyMessageSignature(string $messageSignature, string $timestamp, string $nonce, string $encryptedMessage): bool
     {
-        $array = [$this->token, $timestamp, $nonce, $encryptedMsg];
+        $array = [$this->token, $timestamp, $nonce, $encryptedMessage];
         sort($array, SORT_STRING);
         $str = implode($array);
         $calculatedSignature = sha1($str);
-   
-        return $calculatedSignature === $msgSignature;
+        Log::debug('Calculated signature', ['calculatedSignature' => $calculatedSignature, 'messageSignature' => $messageSignature]);
+        return $calculatedSignature === $messageSignature;
     }
-    
+
     public function decrypt(string $encrypted): string|false
     {
         try {
             Log::debug('Starting decryption', ['encrypted' => $encrypted]);
-            
+
             // base64 解码密文
             $ciphertext = base64_decode($encrypted);
             if ($ciphertext === false) {
                 Log::error('Base64 decode failed');
                 return false;
             }
-            
+
             // 使用 AES-256-CBC 模式解密
             $decrypted = openssl_decrypt(
                 $ciphertext,
@@ -101,7 +92,7 @@ private function checkSignature($msgSignature, $timestamp, $nonce, $encryptedMsg
                 OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
                 $this->iv
             );
-            
+
             if ($decrypted === false) {
                 Log::error('OpenSSL decrypt failed');
                 return false;
